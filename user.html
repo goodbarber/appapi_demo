@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title></title>
+      <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+      <link rel="stylesheet" href="./style.css" type="text/css" />
+      <script src="./GBJSTK.js"></script>
+      <script src="./script.js"></script>
+      <script>
+         function gbPluginDidLoad ()
+         {
+             if ( gbPostData && gbPostData['user'] ) {
+                 user = JSON.parse(decodeURIComponent(gbPostData['user']));
+                 if (user['displayName']) {
+                     document.getElementById('displayname').innerHTML = user['displayName'];
+                 }
+                 if (user['userName']) {
+                     document.getElementById('username').innerHTML = user['userName'];
+                 }
+                 if (user['email']) {
+                     document.getElementById('mail').innerHTML = user['email'];
+                 }
+                 if (user['location']) {
+                     document.getElementById('location').innerHTML = user['location'];
+                 }
+             }
+         }
+      </script>
+   </head>
+   <body>
+      <div class="cell" id="big_header">
+         USER PAGE
+      </div>
+      <div class="cell" id="header">
+         NAME
+      </div>
+      <div class="cell" id="displayname">
+         -
+      </div>
+      <div class="cell" id="header">
+         USERNAME
+      </div>
+      <div class="cell" id="username">
+         -
+      </div>
+      <div class="cell" id="header">
+         MAIL
+      </div>
+      <div class="cell" id="mail">
+         -
+      </div>
+      <div class="cell" id="header">
+         LOCATION
+      </div>
+      <div class="cell" id="location">
+         -
+      </div>
+      <div class="header" style="height:20px;">
+      </div>
+   </body>
+</html>

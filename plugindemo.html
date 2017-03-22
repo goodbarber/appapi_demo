@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title></title>
+      <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+      <link rel="stylesheet" href="./style.css" type="text/css" />
+      <script src="./GBJSTK.js"></script>
+      <script src="./script.js"></script>
+   </head>
+   <body>
+      <div class="cell" id="big_header">
+         PLUGIN DEMO
+      </div>
+      <div class="cell" onclick="alertAppInfo();">
+         Display informations
+      </div>
+      <div class="cell" id="header">
+         BASIC METHODS
+      </div>
+      <a href="http://www.goodbarber.com">
+         <div class="cell">
+            Go on goodbarber.com
+         </div>
+      </a>
+      <hr>
+      <a href="goodbarber://openExternal?url=http%3A%2F%2Fwww.goodbarber.com">
+         <div class="cell">
+            Go on goodbarber.com with Safari
+         </div>
+      </a>
+      <hr>
+      <div class="cell" onclick="gbGoToSection(demoSectionId);">
+         Go on a section
+      </div>
+      <hr>
+      <div class="cell" onclick="gbMailto('contact@goodbarber.com', 'Hello GoodBarbers !', 'I am testing your demo plugin !');">
+         Send an e-mail
+      </div>
+      <hr>
+      <div class="cell" onclick="gbTel('+1(555)555-5555');">
+         Call +1 (555) 555-5555
+      </div>
+      <hr>
+      <div class="cell" onclick="gbSms('+1(555)555-5555');">
+         Text +1 (555) 555-5555
+      </div>
+      <hr>
+      <div class="cell" onclick="gbMaps({'q':'ajaccio'});">
+         Locate Ajaccio
+      </div>
+      <hr>
+      <a href="goodbarber://openapp?scheme=twitter%3A%2F%2F&url=http%3A%2F%2Fwww.twitter.com">
+         <div class="cell">
+            Open Twitter app if it's installed
+      </a>
+      </div>
+      </a>
+      <div class="cell" id="header">
+         NAVIGATION METHODS
+      </div>
+      <hr>
+      <div class="cell" onclick="gbNavigatePush('push');">
+         Push a page
+      </div>
+      <hr>
+      <div class="cell" onclick="gbNavigateModal('modal');">
+         Open a modal page
+      </div>
+      <div class="cell" id="header">
+         HTTP REQUEST METHOD
+      </div>
+      <hr>
+      <div class="cell" onclick="gbNavigatePush('weather');">
+         Check weather in Ajaccio
+      </div>
+      <div class="cell" id="header">
+         OTHER METHODS
+      </div>
+      <hr>
+      <div class="cell" onclick="gbGetMedia();">
+         Take or choose a picture
+      </div>
+      <hr>
+      <div class="cell" onclick="gbGetMedia('photo', 'camera');">
+         Take a photo
+      </div>
+      <hr>
+      <div class="cell" onclick="gbGetMedia('video', 'library');">
+         Take a video
+      </div>
+      <hr>
+      <div class="cell" onclick="gbGetLocation();">
+         Get the location
+      </div>
+      <hr>
+      <div class="cell" onclick="gbGetTimezoneOffset();">
+         Get the timezone offset
+      </div>
+      <hr>
+      <div class="cell" onclick="gbGetUser();">
+         Get user informations
+      </div>
+      <div class="header" style="height:20px;">
+      </div>
+   </body>
+</html>
