@@ -15,7 +15,6 @@
 
     function gbRequestDidSuccess (tag, data, src)
     {
-        //readTextFile(src);
         var rawFile = new XMLHttpRequest();
         rawFile.open("GET", src, false);
         rawFile.onreadystatechange = function ()

@@ -16,31 +16,32 @@ body {
 }
 
 .cell {
-  	display: flex;
-  	align-items: center;
-  	background-color: white;
-  	height: 60px;
-  	padding-left: 20px;
-  	padding-right: 20px;
+    background-color: white;
+    padding-left: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-right: 20px;
+    text-align: left;
 }
 
 #big_header {
-	  height: 240px;
-	  background-color: inherit;
+    background-color: inherit;
     font-size: 64px;
-  	justify-content: center;
+    padding-top: 90px;
+    padding-bottom: 90px;
+    text-align: center;
 }
 
 #header {
-	  background-color: inherit;
-	  margin-top: 20px;
-  	align-items: bottom;
-  	justify-content: center;
+	background-color: inherit;
+	margin-top: 20px;
+        text-align: center;
+        justify-content: center;
 }
 
 a {
-   text-decoration:none;
-   color: inherit;
+      text-decoration:none;
+      color: inherit;
 }
 
 hr {

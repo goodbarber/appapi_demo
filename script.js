@@ -1,4 +1,5 @@
 var demoSectionId = 'YOUR_SECTION_ID';
+var mediaType = 'photo';
 
 function gbDidSuccessGetLocation ( lat, long )
 {
@@ -30,7 +31,7 @@ function gbDidFailGetUser ( errorMessage)
 
 function gbDidSuccessGetMedia ( data, fileUrl )
 {
-	if (fileUrl.indexOf('mp4') > -1) {
+	if (mediaType === 'video') {
 		gbNavigatePush('video', { 'fileUrl' : fileUrl });
 	} else {
 		gbNavigatePush('photo', { 'fileUrl' : fileUrl });
@@ -70,4 +71,21 @@ function alertAppInfo() {
 	s += "Device : " + gbUserInfo.deviceCode + "\n";
 	s += "Language : " + gbUserInfo.language;
 	alert(s);
+}
+
+function alertSetPreference() {
+        var myPref = prompt("Enter a value:");
+        if (myPref != null) {
+                gbSetPreference("myKey", myPref);
+        }
+}
+
+function gbDidSuccessGetPreference(key, value) {
+        if (key == "myKey") {
+                if (value == null || value == "") {
+                        alert("No preference set.");
+                } else {
+                        alert("Your preference set is " + value + ".");
+                }
+        }
 }

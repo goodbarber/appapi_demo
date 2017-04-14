@@ -42,6 +42,13 @@ function gbCheckHTML5Mode () {
 */
 gbHTML5Mode = gbCheckHTML5Mode();
 
+gbUserInfo = {};
+
+/* Var : BOOL gbAngularMode
+*  Switches the URL updates and the form posts to messages to parent iframe - necessary for the plugins to work in the website version.
+*/
+gbAngularMode = false;
+
 /* Var : BOOL gbDevMode
 *  JUST TO DEVELOP DIRECTLY ON A DESKTOP BROWSER. If you want to dev and test your plugin in a standard web page, this boolean will do the trick.
 *  Once integrated in a plugin section of an app, this will always be false.
@@ -50,8 +57,6 @@ gbHTML5Mode = gbCheckHTML5Mode();
 *  false : Production mode
 */
 var gbDevMode = !gbHTML5Mode && !navigator.userAgent.match(/iPhone OS/i) && !navigator.userAgent.match(/Android/i);
-
-gbUserInfo = {};
 
 /************* Helper Functions *************/
 
@@ -119,8 +124,11 @@ function gbPostRequest ( path, getParams, postParams )
 	if ( !gbIsEmpty ( getParams ) )
 		formAction += "?" + gbConstructQueryString ( getParams ); 
 
-	if(!gbHTML5Mode){
-		
+	if (gbHTML5Mode) {
+		window.parent.modules.plugin.postRequest( formAction, postParams  );
+	} else if (gbAngularMode) {
+		window.parent.postMessage({url: formAction, params: postParams}, '*');
+	} else {
 		var form = document.createElement ( "form" );
 		form.setAttribute ( "method", "post" );
 		form.setAttribute ( "action", formAction );
@@ -137,7 +145,7 @@ function gbPostRequest ( path, getParams, postParams )
 		}
 		document.body.appendChild ( form );
 
-		if (gbUserInfo && gbUserInfo.platform=='android')
+		if (gbUserInfo.platform=='android')
 		{
 			Android.post (formAction, JSON.stringify(postParams));
 		}
@@ -145,8 +153,6 @@ function gbPostRequest ( path, getParams, postParams )
 		{
 			form.submit ();
 		}
-	} else {
-		window.parent.modules.plugin.postRequest( formAction, postParams  );
 	}
 }
 
@@ -166,11 +172,14 @@ function gbGetRequest ( path, getParams )
 	if ( gbDebuggingMode >= 1 )
 		alert ( destination );
 	
-	if ( gbDebuggingMode < 2 ){
-		if(!gbHTML5Mode)
-			document.location.replace ( destination );
-		else
+	if ( gbDebuggingMode < 2 ) {
+		if (gbHTML5Mode) {
 			window.parent.modules.plugin.evalPath( destination );
+		} else if (gbAngularMode) {
+			window.parent.postMessage({url: destination}, '*');
+		} else {
+			document.location.replace ( destination );
+		}
 	}
 }
 
@@ -203,24 +212,6 @@ function gbMailto ( to, subject, body )
 	subject = subject || "";
 	body = body || "";
 	gbGetRequest ( "mailto:" + to, { "subject":encodeURIComponent(subject), "body":encodeURIComponent(body) } );
-}
-
-/* Function : gbTel
-*  Launches a call.
-*  @param phoneNumber The number to call 
-*/
-function gbTel ( phoneNumber )
-{
-	gbGetRequest ( "tel:" + phoneNumber );
-}
-
-/* Function : gbSms
-*  Launches the SMS composer.
-*  @param phoneNumber The number to text 
-*/
-function gbSms ( phoneNumber )
-{
-	gbGetRequest ( "sms:" + phoneNumber );
 }
 
 /* Function : gbMaps
@@ -445,3 +436,89 @@ function gbGetUser ()
 
 	gbGetRequest ( "goodbarber://getuser" );
 }
+
+/* Function : gbGetUser
+*  Console log a string. Usefull to log in native iOS with NSLogs
+*/
+function gbLogs( log )
+{
+	alert(gbUserInfo.platform);
+	if (gbUserInfo && gbUserInfo.platform == 'ios' || true) 
+	{
+		alert("c'est bon ios");
+		gbGetRequest ( "goodbarber://logs=" + encodeURIComponent(log));
+	}
+	else 
+	{
+		console.log(log);
+	}
+}
+
+/************* Website *************/
+
+/* Function : gbWebsiteInitPlugin
+ * Initialize the plugin for GB Website
+ */
+function gbWebsiteInitPlugin() {
+	gbAngularMode = true;
+	gbDevMode = false;
+
+	// Intercept clicks on links in order to call the corresponding method
+	var gbCustomLinks = document.getElementsByTagName("a");
+	for(var z = 0; z < gbCustomLinks.length; z++) {
+		var gbCustomLink = gbCustomLinks[z];
+		if (!gbCustomLink.protocol.startsWith('javascript')) {
+			gbCustomLink.onclick = function(e){
+				e.preventDefault();
+				parent.postMessage({url: this.getAttribute("href")}, '*');
+				return false;
+			};
+		}
+	}
+}
+
+/* Function : gbWebsiteSetData
+ * Set a variable with data
+ * @param name The name of the variable
+ * @param value The value of the variable
+ */
+function gbWebsiteSetData(name, value) {
+	window[name] = value;
+}
+
+/* Function : gbWebsiteCallback
+ * Call the callback function asked by the Website if it exists
+ */
+function gbWebsiteCallback(method, args) {
+	var callbackFn = window[method];
+	if (callbackFn) {
+		callbackFn.apply(this, args);
+	}
+}
+
+/*
+ * The postMessage API is used to communicate between the Website and the plugin.
+ * Messages contain data sent by the website containing a method and sometimes parameters.
+ */
+window.addEventListener("message", function(event) {
+	// if (event.origin != window.document.origin) {
+	// 	return;
+	// }
+
+	var method;
+	var params;
+	if (event.data) {
+		method = event.data.method;
+		params = event.data.params;
+	}
+
+	if (method == 'gbWebsiteInitPlugin') {
+		gbWebsiteInitPlugin();
+	} else if (gbAngularMode == true && method == 'gbWebsiteSetData') {
+		gbWebsiteSetData(params[0], params[1]);
+	} else if (gbAngularMode == true) {
+		// The method is a callback
+		gbWebsiteCallback(method, params);
+	}
+
+});

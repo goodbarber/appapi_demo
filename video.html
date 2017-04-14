@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html>
-   <head>
-      <title></title>
-      <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
-      <link rel="stylesheet" href="./style.css" type="text/css" />
-      <script src="./GBJSTK.js"></script>
-      <script src="./script.js"></script>
-      <script>
-         function gbPluginDidLoad ()
-         {
-             if ( gbPostData && gbPostData['fileUrl'] ) {
-                 document.getElementById('content').innerHTML = '<video width="90%" height="auto" controls><source src="' + gbPostData['fileUrl'] + '" type="video/mp4">Error</video>';            
-             }
-         }
-      </script>
-   </head>
-   <body>
-      <div class="cell" id="big_header">
-         VIDEO
-      </div>
-      <div id="content">
-      </div>
-      <div class="header" style="height:20px;">
-      </div>
-   </body>
+<head>
+<title></title>
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="./style.css" type="text/css" />
+<script src="./GBJSTK.js"></script>
+<script src="./script.js"></script>
+<script>
+    function gbPluginDidLoad ()
+    {
+        if ( gbPostData && gbPostData['fileUrl'] ) {
+            document.getElementById('content').innerHTML = '<video width="90%" height="auto" controls><source src="' + gbPostData['fileUrl'] + '" type="video/mp4">Error</video>';            
+        }
+    }
+</script>
+</head>
+<body>
+    	<div class="cell" id="big_header">
+        	VIDEO
+    	</div>
+        <div id="content">
+        </div>
+        <div class="header" style="height:20px;">
+        </div>
+</body>
 </html>
