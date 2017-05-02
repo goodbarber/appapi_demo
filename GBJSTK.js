@@ -442,10 +442,8 @@ function gbGetUser ()
 */
 function gbLogs( log )
 {
-	alert(gbUserInfo.platform);
-	if (gbUserInfo && gbUserInfo.platform == 'ios' || true) 
+	if (gbUserInfo && gbUserInfo.platform == 'ios') 
 	{
-		alert("c'est bon ios");
 		gbGetRequest ( "goodbarber://logs=" + encodeURIComponent(log));
 	}
 	else 
