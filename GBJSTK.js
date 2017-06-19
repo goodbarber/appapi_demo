@@ -444,11 +444,26 @@ function gbLogs( log )
 {
 	if (gbUserInfo && gbUserInfo.platform == 'ios') 
 	{
-		gbGetRequest ( "goodbarber://logs=" + encodeURIComponent(log));
+		gbAlert('Logs', log);
 	}
 	else 
 	{
 		console.log(log);
+	}
+}
+
+/* Function : gbGetUser
+*  Display an alert
+*/
+function gbAlert( title, message )
+{
+	if (gbUserInfo && gbUserInfo.platform == 'ios') 
+	{
+		gbGetRequest ( "goodbarber://alert?title=" + encodeURIComponent(title) + '&message=' + encodeURIComponent(message));
+	}
+	else 
+	{
+		alert.log(title + '\n' + message);
 	}
 }
 
