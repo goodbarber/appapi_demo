@@ -463,7 +463,7 @@ function gbAlert( title, message )
 	}
 	else 
 	{
-		alert.log(title + '\n' + message);
+		alert(title + '\n' + message);
 	}
 }
 
