@@ -22,25 +22,6 @@ gbToken = gbParam('gbToken');
 
 /************* Parent platform detection *************/
 
-/* Function : isHTML5Mode
-*  This function checks if the plugin is loaded inside an HTML5 version, by checking parent iframe info.
-*  @return true if loaded inside HTML5 version
-*/
-function gbCheckHTML5Mode () {
-    try {
-        return window.parent && window.self !== window.parent && window.parent.isGbHTML5;
-    } catch (e) {
-    	/*No access to parent iframe = CORS iframe = not HTML5 (plugin iframes use same domain).*/
-        return false;
-    }
-}
-
-/* Var : BOOL gbHTML5Mode
-*  Switches the URL updates and the form posts to calls to parent iframe - necessary for the plugins to work in the HTML5 version.
-*  true : Development mode
-*  false : Production mode
-*/
-gbHTML5Mode = gbCheckHTML5Mode();
 
 gbUserInfo = {};
 
@@ -56,16 +37,45 @@ gbAngularMode = false;
 *  true : Development mode
 *  false : Production mode
 */
-var gbDevMode = !gbHTML5Mode && !navigator.userAgent.match(/iPhone OS/i) && !navigator.userAgent.match(/Android/i);
+var gbDevMode = !gbAngularMode && !navigator.userAgent.match(/iPhone OS/i) && !navigator.userAgent.match(/iPad/i) && !navigator.userAgent.match(/Android/i);
 
 /************* Helper Functions *************/
+
+/** Function: gbPlatformIsIos()
+ * This function allow you to check if the current platform is iOS
+ * @return true if the current plateform is iOS
+ */
+function gbPlatformIsIos()
+{
+	return gbUserInfo && gbUserInfo.platform == 'ios';
+}
+
+/** Function: gbPlatformIsAndroid()
+ * This function allow you to check if the current platform is Android
+ * @return true if the current plateform is Android
+ */
+function gbPlatformIsAndroid()
+{
+	return gbUserInfo && gbUserInfo.platform == 'android';
+}
+
+/** Function : gbInitPWA
+ *  This function initializes communication with the parent PWA (if not already done)
+ */
+function gbInitPWA() 
+{
+	if (!gbAngularMode && window.parent) {
+		parent.postMessage({url: "goodbarber://init"}, '*');
+	}
+}
 
 /* Function : gbParam
 *  This function returns the value of an argument in location.href.
 *  @param name The name of the argument
 *  @return value
 */
-function gbParam(name) {
+function gbParam(name) 
+{
     var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
     if (results) return results[1];
     return '';
@@ -113,20 +123,28 @@ function gbConstructQueryString ( params )
 
 /* Function : gbPostRequest
 *  In native engines and devmode, this function creates a form in document.body and send a POST request to "path" using "getParams" and "postParams".
-*  In HTML5 engine, this function delegates its action to the parent window.
+*  In Webapp engine, this function delegates its action to the parent window.
 *  @param path The action of the form
 *  @param params The params to send in the request body 
 */
 function gbPostRequest ( path, getParams, postParams )
 {
+	// As WKWebview doesn't allow anymore access to httpBody, we add as get parameter an id to the request
+	if (gbPlatformIsIos() && postParams) {
+		var date = new Date();
+		var timestamp = date.getTime();
+		if (!getParams) {
+			getParams = {}
+		}
+
+		getParams['gbid'] = timestamp;
+	}
 
 	var formAction = path;
 	if ( !gbIsEmpty ( getParams ) )
 		formAction += "?" + gbConstructQueryString ( getParams ); 
 
-	if (gbHTML5Mode) {
-		window.parent.modules.plugin.postRequest( formAction, postParams  );
-	} else if (gbAngularMode) {
+	if (gbAngularMode) {
 		window.parent.postMessage({url: formAction, params: postParams}, '*');
 	} else {
 		var form = document.createElement ( "form" );
@@ -145,12 +163,31 @@ function gbPostRequest ( path, getParams, postParams )
 		}
 		document.body.appendChild ( form );
 
-		if (gbUserInfo.platform=='android')
+		if (gbPlatformIsAndroid())
 		{
 			Android.post (formAction, JSON.stringify(postParams));
 		}
-		else
+		else 
 		{
+			if (gbPlatformIsIos() && postParams)
+			{
+				// As WKWebview doesn't allow anymore access to httpBody, we add post params to the dom as hidden
+				var postElement = document.createElement('div');
+				postElement.setAttribute("class", "gbdata");
+				postElement.setAttribute("style", "display: none !important");
+				postElement.setAttribute("id", getParams['gbid']);
+				var postParamsString = "";
+				var i=0;
+				for (var key in postParams) {
+					if (i>0) {
+					    postParamsString += "&";
+					}
+					postParamsString += key + "=" + postParams[key];
+					i++;
+				}
+				postElement.innerHTML = postParamsString;
+	            document.body.appendChild(postElement);
+			}
 			form.submit ();
 		}
 	}
@@ -158,7 +195,7 @@ function gbPostRequest ( path, getParams, postParams )
 
 /* Function : gbGetRequest
 *  In native engines, this function launches a navigation to "destination".
-*  In HTML5 engine, this function sends the "destination" to parent window (HTML5 cannot interrupt navigations)
+*  In Webapp engine, this function sends the "destination" to parent window with the PostMessage Api
 *  @param path The destination path
 *  @param params (optional) The params to send in the request body 
 */
@@ -173,12 +210,11 @@ function gbGetRequest ( path, getParams )
 		alert ( destination );
 	
 	if ( gbDebuggingMode < 2 ) {
-		if (gbHTML5Mode) {
-			window.parent.modules.plugin.evalPath( destination );
-		} else if (gbAngularMode) {
+		if (gbAngularMode) {
 			window.parent.postMessage({url: destination}, '*');
 		} else {
-			document.location.replace ( destination );
+			// Timeout 0 in case of consecutive calls to this method
+			window.setTimeout(function (){ document.location.replace ( destination ); }, 0);
 		}
 	}
 }
@@ -442,7 +478,7 @@ function gbGetUser ()
 */
 function gbLogs( log )
 {
-	if (gbUserInfo && gbUserInfo.platform == 'ios') 
+	if (gbPlatformIsIos()) 
 	{
 		gbAlert('Logs', log);
 	}
@@ -457,13 +493,13 @@ function gbLogs( log )
 */
 function gbAlert( title, message )
 {
-	if (gbUserInfo && gbUserInfo.platform == 'ios') 
+	if (gbPlatformIsIos()) 
 	{
 		gbGetRequest ( "goodbarber://alert?title=" + encodeURIComponent(title) + '&message=' + encodeURIComponent(message));
 	}
 	else 
 	{
-		alert.log(title + '\n' + message);
+		alert(title + '\n' + message);
 	}
 }
 
@@ -535,3 +571,5 @@ window.addEventListener("message", function(event) {
 	}
 
 });
+
+gbInitPWA();
