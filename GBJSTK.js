@@ -129,8 +129,13 @@ function gbConstructQueryString ( params )
 */
 function gbPostRequest ( path, getParams, postParams )
 {
+    var shouldRemovePost = false;
+    if (gbPlatformIsIos() && path.startsWith("goodbarber://") && postParams) {
+        shouldRemovePost = true;
+    }
+    
 	// As WKWebview doesn't allow anymore access to httpBody, we add as get parameter an id to the request
-	if (gbPlatformIsIos() && postParams) {
+	if (shouldRemovePost) {
 		var date = new Date();
 		var timestamp = date.getTime();
 		if (!getParams) {
@@ -169,7 +174,7 @@ function gbPostRequest ( path, getParams, postParams )
 		}
 		else 
 		{
-			if (gbPlatformIsIos() && postParams)
+			if (shouldRemovePost)
 			{
 				// As WKWebview doesn't allow anymore access to httpBody, we add post params to the dom as hidden
 				var postElement = document.createElement('div');
@@ -444,22 +449,24 @@ function gbGetTimezoneOffset ()
 *  Stores a preference in User Defaults.
 *  @param key The key to store
 *  @param valueString The value to store
+*  @param isGlobal Used to share preference between all plugins of the app. Possible values : 0 or 1.
 */
-function gbSetPreference ( key, valueString )
+function gbSetPreference ( key, valueString, isGlobal="0" )
 {
-	gbGetRequest ( "goodbarber://setpreference", { "key":key, "value":valueString } );
+	gbGetRequest ( "goodbarber://setpreference", { "key":key, "value":valueString, "global": isGlobal } );
 }
 
 /* Function : gbGetPreference
 *  Get a preference stored in User Defaults.
 *  @param key The key to get
+*  @param isGlobal Used to get a shared preference between all plugins of the app. Possible values : 0 or 1.
 */
-function gbGetPreference ( key )
+function gbGetPreference ( key, isGlobal="0" )
 {
 	if ( gbDevMode )
 		gbDidSuccessGetPreference ( key, "" );
 
-	gbGetRequest ( "goodbarber://getpreference", { "key":key } );
+	gbGetRequest ( "goodbarber://getpreference", { "key":key, "isGlobal": isGlobal } );
 }
 
 /* Function : gbGetUser
