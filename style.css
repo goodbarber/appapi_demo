@@ -22,6 +22,7 @@ body {
     padding-bottom: 20px;
     padding-right: 20px;
     text-align: left;
+    cursor: pointer;
 }
 
 #big_header {

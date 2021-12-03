@@ -510,6 +510,14 @@ function gbAlert( title, message )
 	}
 }
 
+/* Function : gbPrint
+*  Print the content of the page
+*/
+function gbPrint()
+{
+	gbGetRequest ( "goodbarber://print" );
+}
+
 /************* Website *************/
 
 /* Function : gbWebsiteInitPlugin
