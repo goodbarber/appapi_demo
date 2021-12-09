@@ -360,18 +360,6 @@ function gbRequest ( resourceUrl, tag, cache, requestMethod, postParams )
 
 /************* [GB Plugin API] Other Methods *************/
 
-/* Function : gbAuthenticate
-*  Ask the user to authenticate on a social network.
-*  @param services The services to use for the authentication | values : [all(default)|facebook|twitter]
-*  @param skip Give the user the possibility to skip the authentication process | values : [YES(default)|NO]
-*/
-function gbAuthenticate ( services, skip )
-{
-	services = services || "all";
-	skip = skip || "YES";
-	gbGetRequest ( "goodbarber://authenticate", { "services":services, "skip":skip } );
-}
-
 /* Function : gbShare
 *  Ask the user to share a content on a social network.
 *  @param shareText The text to share
@@ -508,6 +496,18 @@ function gbAlert( title, message )
 	{
 		alert(title + '\n' + message);
 	}
+}
+
+/* Function : gbPrint
+*  Print the content of the page
+*/
+function gbPrint()
+{
+	if (!gbAngularMode) {
+        gbGetRequest ( "goodbarber://print" );
+    } else {
+        window.print();
+    }
 }
 
 /************* Website *************/
