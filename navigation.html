@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="./style.css" type="text/css" />
+<script src="./GBJSTK.js"></script>
+<script>
+    function displayUrl() {
+        gb.alert(gb.navigation.url());
+    }
+
+    function displayParams() {
+        gb.alert(gb.navigation.params());
+    }
+</script>
+</head>
+<body>
+    	<div class="cell" id="big_header">
+        	NAVIGATION METHODS
+    	</div>
+        <div class="cell" onclick="displayUrl();">
+            Display the url of the current page
+        </div>
+        <hr>
+        <div class="cell" onclick="displayParams();">
+            Display parameters of the current page
+        </div>
+        <hr>
+        <div class="cell" onclick="gb.storage.removeItem('myKey');">
+            Open a plugin internal page
+        </div>
+        <hr>
+        <a href="http://www.goodbarber.com">
+           <div class="cell">
+              Go on goodbarber.com
+           </div>
+        </a>
+        <hr>
+        <div class="cell" onclick="gb.navigation.open('https://www.goodbarber.com');">
+            Go on goodbarber.com on external browser
+        </div>
+        <hr>
+        <a href="tel:+1(555)555-5555">
+            <div class="cell">
+            Call +1 (555) 555-5555
+            </div>
+        <hr>
+        <a href="sms:+1(555)555-5555">
+            <div class="cell">
+            Text +1 (555) 555-5555
+            </div>
+        </a>
+        <hr>
+        <div class="cell" onclick="gb.navigation.mail('contact@goodbarber.com', 'Hello GoodBarbers !', 'I am testing your demo plugin !');">
+           Send an e-mail
+        </div>
+        <hr>
+        <div class="cell" onclick="gb.navigation.maps({'q':'ajaccio'});">
+           Locate Ajaccio
+        </div>
+        <hr>
+        <div class="header" style="height:20px;">
+        </div>
+</body>
+</html>
