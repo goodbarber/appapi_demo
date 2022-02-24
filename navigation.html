@@ -7,11 +7,14 @@
 <script src="./GBJSTK.js"></script>
 <script>
     function displayUrl() {
-        gb.alert(gb.navigation.url());
+        gb.alert('url', gb.navigation.href());
     }
 
     function displayParams() {
-        gb.alert(gb.navigation.params());
+        var p = gb.navigation.params();
+        for (var prop in p) {
+          gb.alert('params', prop + ' = ' + p[prop]);
+        }
     }
 </script>
 </head>
@@ -27,9 +30,11 @@
             Display parameters of the current page
         </div>
         <hr>
-        <div class="cell" onclick="gb.storage.removeItem('myKey');">
-            Open a plugin internal page
-        </div>
+        <a href="internalpage">
+           <div class="cell">
+              Go on another Plugin internal page
+           </div>
+        </a>
         <hr>
         <a href="http://www.goodbarber.com">
            <div class="cell">
