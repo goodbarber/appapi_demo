@@ -241,11 +241,11 @@ var gb = (function() {
 		xhr.send ( null );
 	}
 
-	function gbSendRequest ( resourceUrl, tag, cache, requestMethod, postParams )
+	function gbHTTPRequest ( resourceUrl, tag, cache, requestMethod, postParams )
 	{
 		if (gbDevMode && gbToken == '')
 		{
-			setTimeout(function() { gbSendRequest ( resourceUrl, tag, cache, requestMethod, postParams ) }, 200);
+			setTimeout(function() { gbHTTPRequest ( resourceUrl, tag, cache, requestMethod, postParams ) }, 200);
 			return;
 		}
 
@@ -555,8 +555,11 @@ var gb = (function() {
 		}
 	});
 
+	/************* [GB Plugin API] Deprecated Methods *************/
+
 	var deprecated = {
-		sendRequest: gbSendRequest,
+		pluginRequest: gbGetRequest,
+		httpRequest: gbHTTPRequest
 	} 
 
     // public members, exposed with return statement
@@ -606,7 +609,7 @@ var gb = (function() {
 */
 function gbRequest ( resourceUrl, tag, cache, requestMethod, postParams )
 {
-	return gb.deprecated.sendRequest(resourceUrl, tag, cache, requestMethod, postParams);
+	return gb.deprecated.httpRequest(resourceUrl, tag, cache, requestMethod, postParams);
 }
 
 /************* [GB Plugin API] Other Methods *************/
@@ -680,7 +683,8 @@ function gbGetTimezoneOffset ()
 function gbSetPreference ( key, valueString, isGlobal="0" )
 {
 	var url = "goodbarber://setpreference?key="+key+"&value="+valueString+"&global="+isGlobal;
-	return gb.deprecated.sendRequest(url, 0, false, "GET", {});
+
+	return gb.deprecated.pluginRequest(url);
 }
 
 /* Function : gbGetPreference
@@ -693,12 +697,8 @@ function gbSetPreference ( key, valueString, isGlobal="0" )
 */
 function gbGetPreference ( key, isGlobal="0" )
 {
-	if ( gbDevMode )
-		gbDidSuccessGetPreference ( key, "" );
-
-	
 	var url = "goodbarber://getpreference?key="+key+"&global="+isGlobal;
-	return gb.deprecated.sendRequest(url, 0, false, "GET", {});
+	return gb.deprecated.pluginRequest(url);
 }
 
 /* Function : gbGetUser
@@ -709,10 +709,7 @@ function gbGetPreference ( key, isGlobal="0" )
 */
 function gbGetUser ()
 {
-	if ( gbDevMode )
-		gbDidSuccessGetUser ( { id:0, email:"user@example.com", attribs:{ displayName:"Example User" } } );
-	
-	return gb.deprecated.sendRequest("goodbarber://getuser", 0, false, "GET", {});
+	return gb.deprecated.pluginRequest("goodbarber://getuser");
 }
 
 /* Function : gbLogs

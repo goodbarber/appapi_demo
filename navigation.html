@@ -7,13 +7,13 @@
 <script src="./GBJSTK.js"></script>
 <script>
     function displayUrl() {
-        gb.alert('url', gb.location.href());
+        gb.alert('The url is :', gb.location.href);
     }
 
     function displayParams() {
         var p = gb.location.params();
         for (var prop in p) {
-          gb.alert('params', prop + ' = ' + p[prop]);
+          gb.alert('Params are :', prop + ' = ' + p[prop]);
         }
     }
 </script>

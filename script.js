@@ -43,26 +43,10 @@ function gbDidFailGetMedia ( errorMessage )
 }
 
 function gbGetUserInfo() {
-	if (gbDevMode) {
-		var info = {};
-		info['platform'] = "ios";
-		info['binaryVersion'] = '1.0';
-		info['gbVersion'] = '5000';
-		info['osVersion'] = 'iOS10';
-		info['deviceCode'] = 'iPhone7,1';
-		info['language'] = 'fr';
-
-		return info;
-	} else {
-		return gbUserInfo;
-	}
+	return gbUserInfo;
 }
 
 function alertAppInfo() {
-	if (gbDevMode) {
-		gbUserInfo = gbGetUserInfo();
-	}
-
 	var s = "Platform : " + gbUserInfo.platform + "\n";
 	s += "App version : " + gbUserInfo.binaryVersion + "\n";
 	s += "GoodBarber engine version : " + gbUserInfo.gbVersion + "\n";
