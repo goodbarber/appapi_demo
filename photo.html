@@ -5,13 +5,13 @@
 <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="./style.css" type="text/css" />
 <script src="./GBJSTK.js"></script>
-<script src="./script.js"></script>
 <script>
     function gbPluginDidLoad ()
     {
-        if ( gbPostData && gbPostData['fileUrl'] ) 
+        var params = gb.location.params();
+        if ( params.has['fileUrl'] ) 
         {
-            document.getElementById('content').innerHTML = '<img src="' + gbPostData['fileUrl'] + '" style="width: 90%;" />';
+            document.getElementById('content').innerHTML = '<img src="' + params.get['fileUrl'] + '" style="width: 90%;" />';
         }
     }
 </script>

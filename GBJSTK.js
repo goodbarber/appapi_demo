@@ -48,8 +48,9 @@ var gb = (function() {
 
 	/************* Parent platform detection *************/
 
-
-	gbUserInfo = {};
+	if (gbUserInfo == null) {
+		gbUserInfo = {};
+	}
 
 	/* Var : BOOL gbAngularMode
 	*  Switches the URL updates and the form posts to messages to parent iframe - necessary for the plugins to work in the website version.
@@ -208,11 +209,11 @@ var gb = (function() {
 		xhr.send ( null );
 	}
 
-	function gbSendRequest ( resourceUrl, tag, cache, requestMethod, postParams )
+	function gbHTTPRequest ( resourceUrl, tag, cache, requestMethod, postParams )
 	{
 		if (gbDevMode && gbToken == '')
 		{
-			setTimeout(function() { gbSendRequest ( resourceUrl, tag, cache, requestMethod, postParams ) }, 200);
+			setTimeout(function() { gbHTTPRequest ( resourceUrl, tag, cache, requestMethod, postParams ) }, 200);
 			return;
 		}
 
@@ -407,30 +408,6 @@ var gb = (function() {
 		gbGetRequest ( "goodbarber://gettimezoneoffset" );
 	}
 
-	/* Function : setPreference
-	*  Stores a preference in User Defaults.
-	*  @param key The key to store
-	*  @param valueString The value to store
-	*  @param isGlobal Used to share preference between all plugins of the app. Possible values : 0 or 1.
-	*/
-	function setPreference ( key, valueString, isGlobal="0" )
-	{
-		gbGetRequest ( "goodbarber://setpreference", { "key":key, "value":valueString, "global": isGlobal } );
-	}
-
-	/* Function : getPreference
-	*  Get a preference stored in User Defaults.
-	*  @param key The key to get
-	*  @param isGlobal Used to get a shared preference between all plugins of the app. Possible values : 0 or 1.
-	*/
-	function getPreference ( key, isGlobal="0" )
-	{
-		if ( gbDevMode )
-			gbDidSuccessGetPreference ( key, "" );
-
-		gbGetRequest ( "goodbarber://getpreference", { "key":key, "isGlobal": isGlobal } );
-	}
-
 	/* Function : getUser
 	*  Get the currently connected user. Will call the fail handler gbDidFailGetUser if no user is connected.
 	*/
@@ -539,7 +516,7 @@ var gb = (function() {
 			gbGetRequest ( "goodbarber://maps", params );
 	}
 
-	var navigation = {
+	var location = {
 		href: href,
 		params: params,
 		open: open,
@@ -547,61 +524,54 @@ var gb = (function() {
 		maps: maps
 	};
 
-    /************* [GB Plugin API] Storage Methods *************/
-
-	function setItem(key, item) {
-		var s = item;
-		if ((!!item) && (item.constructor === Array) || (!!item) && (item.constructor === Object)) {
-			s = JSON.stringify(item);
+	Object.defineProperty(location, 'href', { //<- This object is called a "property descriptor".
+		//Alternatively, use: `get() {}`
+		get: function() {
+		  return href();
+		},
+		//Alternatively, use: `set(newValue) {}`
+		set: function(newValue) {
+			gbGetRequest ( newValue );
 		}
-		gbPostRequest("goodbarber://gbsetstorageitem", { "key": key }, { "item": s });
-	}
+	});
 
-	function getItem(key, callback) {
-		var s = gbCallbackToString(callback);
-		gbPostRequest("goodbarber://gbgetstorageitem", { "key": key }, { "callback": s });
-	}
+	/************* [GB Plugin API] Deprecated Methods *************/
 
-	function removeItem(key) {
-		gbPostRequest("goodbarber://gbremovestorageitem", { "key": key });
-	}
-
-	function clear() {
-		gbPostRequest("goodbarber://gbclearstorage", {});
-	}
-
-	function keys(callback) {
-		var s = gbCallbackToString(callback);
-		gbPostRequest("goodbarber://gbgetstoragekeys", {}, { "callback": s });
-	}
-
-    var storage = {
-		setItem: setItem,
-		getItem: getItem,
-		removeItem: removeItem,
-		clear: clear,
-        keys: keys
-	};
+	var deprecated = {
+		pluginRequest: gbGetRequest,
+		httpRequest: gbHTTPRequest
+	} 
 
     // public members, exposed with return statement
-    return {
+    var result = {
     	init: init,
-		sendRequest: gbSendRequest,
+		deprecated: deprecated,
     	version: version,
-		navigation: navigation,
+		location: location,
         storage: storage,
     	share: share,
     	getPhoto: getPhoto,
     	getVideo: getVideo,
     	getLocation: getLocation,
     	getTimezoneOffset: getTimezoneOffset,
-    	setPreference: setPreference,
-    	getPreference: getPreference,
     	getUser: getUser,
     	log: log,
     	alert: _alert,
     	print: print
     };
+
+	Object.defineProperty(result, 'location', { //<- This object is called a "property descriptor".
+		//Alternatively, use: `get() {}`
+		get: function() {
+		  return location;
+		},
+		//Alternatively, use: `set(newValue) {}`
+		set: function(newValue) {
+			gbGetRequest ( newValue );
+		}
+	});
+
+	return result;
 })();
 
 /************* GoodBarber Plugin API Functions *************/
@@ -621,7 +591,7 @@ var gb = (function() {
 */
 function gbRequest ( resourceUrl, tag, cache, requestMethod, postParams )
 {
-	return gb.sendRequest(resourceUrl, tag, cache, requestMethod, postParams);
+	return gb.deprecated.httpRequest(resourceUrl, tag, cache, requestMethod, postParams);
 }
 
 /************* [GB Plugin API] Other Methods *************/
@@ -683,39 +653,6 @@ function gbGetTimezoneOffset ()
 	return gb.getTimezoneOffset();
 }
 
-/* Function : gbSetPreference
-*  Stores a preference in User Defaults.
-*  @param key The key to store
-*  @param valueString The value to store
-*  @param isGlobal Used to share preference between all plugins of the app. Possible values : 0 or 1.
-*/
-/*
-*  	This function is deprecated
-*/
-function gbSetPreference ( key, valueString, isGlobal="0" )
-{
-	var url = "goodbarber://setpreference?key="+key+"&value="+valueString+"&global="+isGlobal;
-	return gb.sendRequest(url, 0, false, "GET", {});
-}
-
-/* Function : gbGetPreference
-*  Get a preference stored in User Defaults.
-*  @param key The key to get
-*  @param isGlobal Used to get a shared preference between all plugins of the app. Possible values : 0 or 1.
-*/
-/*
-*  	This function is deprecated
-*/
-function gbGetPreference ( key, isGlobal="0" )
-{
-	if ( gbDevMode )
-		gbDidSuccessGetPreference ( key, "" );
-
-	
-	var url = "goodbarber://getpreference?key="+key+"&global="+isGlobal;
-	return gb.sendRequest(url, 0, false, "GET", {});
-}
-
 /* Function : gbGetUser
 *  Get the currently connected user. Will call the fail handler gbDidFailGetUser if no user is connected.
 */
@@ -724,10 +661,7 @@ function gbGetPreference ( key, isGlobal="0" )
 */
 function gbGetUser ()
 {
-	if ( gbDevMode )
-		gbDidSuccessGetUser ( { id:0, email:"user@example.com", attribs:{ displayName:"Example User" } } );
-	
-	return gb.sendRequest("goodbarber://getuser", 0, false, "GET", {});
+	return gb.deprecated.pluginRequest("goodbarber://getuser");
 }
 
 /* Function : gbLogs

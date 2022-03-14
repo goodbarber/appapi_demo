@@ -1,4 +1,3 @@
-var demoSectionId = 'YOUR_SECTION_ID';
 var mediaType = 'photo';
 
 function gbDidSuccessGetLocation ( lat, long )
@@ -21,7 +20,7 @@ function gbDidSuccessGetTimezoneOffset ( offset )
 
 function gbDidSuccessGetUser ( user )
 {
-	gbNavigatePush('user', { 'user' : JSON.stringify(JSON.parse(user)) });
+	gbRequest("./user?user="+JSON.stringify(JSON.parse(user)), 0, false, "GET");
 }
 
 function gbDidFailGetUser ( errorMessage)
@@ -32,9 +31,9 @@ function gbDidFailGetUser ( errorMessage)
 function gbDidSuccessGetMedia ( data, fileUrl )
 {
 	if (mediaType === 'video') {
-		gbNavigatePush('video', { 'fileUrl' : fileUrl });
+		document.location.href = "./video";
 	} else {
-		gbNavigatePush('photo', { 'fileUrl' : fileUrl });
+		document.location.href = "./photo";
 	}
 }
 
@@ -44,26 +43,10 @@ function gbDidFailGetMedia ( errorMessage )
 }
 
 function gbGetUserInfo() {
-	if (gbDevMode) {
-		var info = {};
-		info['platform'] = "ios";
-		info['binaryVersion'] = '1.0';
-		info['gbVersion'] = '5000';
-		info['osVersion'] = 'iOS10';
-		info['deviceCode'] = 'iPhone7,1';
-		info['language'] = 'fr';
-
-		return info;
-	} else {
-		return gbUserInfo;
-	}
+	return gbUserInfo;
 }
 
 function alertAppInfo() {
-	if (gbDevMode) {
-		gbUserInfo = gbGetUserInfo();
-	}
-
 	var s = "Platform : " + gbUserInfo.platform + "\n";
 	s += "App version : " + gbUserInfo.binaryVersion + "\n";
 	s += "GoodBarber engine version : " + gbUserInfo.gbVersion + "\n";
@@ -74,18 +57,18 @@ function alertAppInfo() {
 }
 
 function alertSetPreference() {
-        var myPref = prompt("Enter a value:");
-        if (myPref != null) {
-                gbSetPreference("myKey", myPref);
-        }
+	var myPref = prompt("Enter a value:");
+	if (myPref != null) {
+		gbSetPreference("myKey", myPref);
+	}
 }
 
 function gbDidSuccessGetPreference(key, value) {
-        if (key == "myKey") {
-                if (value == null || value == "") {
-                        alert("No preference set.");
-                } else {
-                        alert("Your preference set is " + value + ".");
-                }
-        }
+	if (key == "myKey") {
+		if (value == null || value == "") {
+			alert("No preference set.");
+		} else {
+			alert("Your preference set is " + value + ".");
+		}
+	}
 }
