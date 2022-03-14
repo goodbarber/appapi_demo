@@ -8,7 +8,7 @@
 <script>
     function gbPluginDidLoad ()
     {
-        var params = gb.navigation.params();
+        var params = gb.location.params();
         if (params.has['user'] ) {
                 var user = JSON.parse(decodeURIComponent(params.get['user']));
             if (user['displayName']) {

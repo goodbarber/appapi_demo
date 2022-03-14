@@ -7,11 +7,11 @@
 <script src="./GBJSTK.js"></script>
 <script>
     function displayUrl() {
-        gb.alert('url', gb.navigation.href());
+        gb.alert('url', gb.location.href());
     }
 
     function displayParams() {
-        var p = gb.navigation.params();
+        var p = gb.location.params();
         for (var prop in p) {
           gb.alert('params', prop + ' = ' + p[prop]);
         }
@@ -42,7 +42,7 @@
            </div>
         </a>
         <hr>
-        <div class="cell" onclick="gb.navigation.open('https://www.goodbarber.com');">
+        <div class="cell" onclick="gb.location.open('https://www.goodbarber.com');">
             Go on goodbarber.com on external browser
         </div>
         <hr>
@@ -57,11 +57,11 @@
             </div>
         </a>
         <hr>
-        <div class="cell" onclick="gb.navigation.mail('contact@goodbarber.com', 'Hello GoodBarbers !', 'I am testing your demo plugin !');">
+        <div class="cell" onclick="gb.location.mail('contact@goodbarber.com', 'Hello GoodBarbers !', 'I am testing your demo plugin !');">
            Send an e-mail
         </div>
         <hr>
-        <div class="cell" onclick="gb.navigation.maps({'q':'ajaccio'});">
+        <div class="cell" onclick="gb.location.maps({'q':'ajaccio'});">
            Locate Ajaccio
         </div>
         <hr>
