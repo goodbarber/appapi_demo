@@ -153,74 +153,19 @@ var gb = (function() {
 	*  @param path The action of the form
 	*  @param params The params to send in the request body 
 	*/
-	function gbPostRequest ( path, getParams, postParams )
+	function gbPostRequest(path, getParams, postParams) 
 	{
-	    var shouldRemovePost = false;
-	    if (gbPlatformIsIos() && path.startsWith("goodbarber://") && postParams) {
-	        shouldRemovePost = true;
-	    }
-	    
-		// As WKWebview doesn't allow anymore access to httpBody, we add as get parameter an id to the request
-		if (shouldRemovePost) {
-			var date = new Date();
-			var timestamp = date.getTime();
-			if (!getParams) {
-				getParams = {}
-			}
-
-			getParams['gbid'] = timestamp;
-		}
-
 		var formAction = path;
-		if ( !gbIsEmpty ( getParams ) )
-			formAction += "?" + gbConstructQueryString ( getParams ); 
+		if (!gbIsEmpty(getParams))
+			formAction += "?" + gbConstructQueryString(getParams);
 
 		if (gbAngularMode) {
-			window.parent.postMessage({url: formAction, params: postParams}, '*');
-		} else {
-			var form = document.createElement ( "form" );
-			form.setAttribute ( "method", "post" );
-			form.setAttribute ( "action", formAction );
-			for ( var key in postParams )
-			{
-				if ( postParams.hasOwnProperty ( key ) )
-				{
-					var hiddenField = document.createElement ( "input" );
-					hiddenField.setAttribute ( "type", "hidden" );
-					hiddenField.setAttribute ( "name", key );
-					hiddenField.setAttribute ( "value", postParams[key] );
-					form.appendChild ( hiddenField );
-				}
-			}
-			document.body.appendChild ( form );
-
-			if (gbPlatformIsAndroid())
-			{
-				Android.post (formAction, JSON.stringify(postParams));
-			}
-			else 
-			{
-				if (shouldRemovePost)
-				{
-					// As WKWebview doesn't allow anymore access to httpBody, we add post params to the dom as hidden
-					var postElement = document.createElement('div');
-					postElement.setAttribute("class", "gbdata");
-					postElement.setAttribute("style", "display: none !important");
-					postElement.setAttribute("id", getParams['gbid']);
-					var postParamsString = "";
-					var i=0;
-					for (var key in postParams) {
-						if (i>0) {
-						    postParamsString += "&";
-						}
-						postParamsString += key + "=" + postParams[key];
-						i++;
-					}
-					postElement.innerHTML = postParamsString;
-		            document.body.appendChild(postElement);
-				}
-				form.submit ();
-			}
+			window.parent.postMessage({ url: formAction, params: postParams }, '*');
+		} else if (gbPlatformIsIos()) {
+			const message = JSON.stringify({ url: formAction, params: postParams })
+			window.webkit.messageHandlers.gbObserver.postMessage(message);
+		} else if (gbPlatformIsAndroid()) {
+			Android.post(formAction, JSON.stringify(postParams));
 		}
 	}
 
@@ -341,6 +286,18 @@ var gb = (function() {
 			}
 		}
 
+		/*  Function : gbWebsiteStoreGBGlobalData
+		* Set a variable with data
+		* @param where The name of the variable
+		* @param what The value of the variable
+		*/
+	   function gbWebsiteStoreGBGlobalData(where, what) {
+		   window['_GB'] = ({
+			   ...(window['_GB'] || {}),
+			   [where]: what
+		   })
+	   }
+
 		// if (event.origin != window.document.origin) {
 		// 	return;
 		// }
@@ -356,6 +313,8 @@ var gb = (function() {
 			gbWebsiteInitPlugin();
 		} else if (gbAngularMode == true && method == 'gbWebsiteSetData') {
 			gbWebsiteSetData(params[0], params[1]);
+		} else if (method == 'gbWebsiteStoreGBGlobalData') {
+			gbWebsiteStoreGBGlobalData(params[0], params[1]);
 		} else if (gbAngularMode == true) {
 			// The method is a callback
 			gbWebsiteCallback(method, params);
@@ -364,32 +323,6 @@ var gb = (function() {
 	});
 
 	/************* GoodBarber Plugin API Functions *************/
-
-	/************* [GB Plugin API] HTTP Request Methods *************/
-
-	/* Function : get
-	*  Starts a GET request to the url resource, using the "method" method, and passing the "postParams" params if method==POST.
-	*  @param resourceUrl The url of the resource to load
-	*  @param tag A tag to identify the request
-	*  @param cache true if you want to use the app's cache mechanism, false otherwise
-	*/
-	function get ( url, tag = 0, cache = false)
-	{
-		return gbSendRequest ( url, tag, cache, "GET", null);
-	}
-
-	/* Function : post
-	*  Starts a POST request to the url resource, using the "method" method, and passing the "postParams" params if method==POST.
-	*  @param resourceUrl The url of the resource to load
-	*  @param params HTTP Post Params in your request
-	*  @param params HTTP Headers in your request
-	*  @param tag A tag to identify the request
-	*  @param cache true if you want to use the app's cache mechanism, false otherwise
-	*/
-	function post ( url, params, headers = {}, tag = 0, cache = false)
-	{
-		return gbSendRequest ( url, tag, cache, "POST", params);
-	}
 
 	/************* [GB Plugin API] Other Methods *************/
 
@@ -551,55 +484,96 @@ var gb = (function() {
 	    }
 	}
 
-	function test() {
-		alert("test");
+	/************* [GB Plugin API] Navigation Methods *************/
+
+	/* Function: href
+	* Returns the url of the current plugin page
+	*/
+	function href ()
+	{
+		return _GB["href"];
 	}
+
+	/* Function: arguments
+	* Returns the parameters passed throught the url of the page
+	*/
+	function params ()
+	{
+		return _GB["params"];
+	}
+
+	/* Function : open
+	*  Opens the url in a new window of the browser
+	*  @param url The url to open
+	*/
+	function open ( url )
+	{
+		var params = { "url": encodeURIComponent(url) };
+		gbGetRequest ( "goodbarber://openExternal", params);
+	}
+
+	/* Function : mail
+	*  Launches the mail Composer.
+	*  @param to The destination address
+	*  @param subject (optional) The mail subject
+	*  @param body The (optional) mail content 
+	*/
+	function mail ( to, subject, body )
+	{
+		to = to || "";
+		subject = subject || "";
+		body = body || "";
+		gbGetRequest ( "mailto:" + to, { "subject":encodeURIComponent(subject), "body":encodeURIComponent(body) } );
+	}
+
+	/* Function : maps
+	*  Launches the Maps native application.
+	*  @param params The parameters to pass in the query string 
+	*/
+	function maps ( params )
+	{
+		params = params || {};
+		if ( gbIsEmpty ( params ) )
+			gbGetRequest ( "goodbarber://maps?q=" );
+		else
+			gbGetRequest ( "goodbarber://maps", params );
+	}
+
+	var navigation = {
+		href: href,
+		params: params,
+		open: open,
+		mail: mail,
+		maps: maps
+	};
 
     /************* [GB Plugin API] Storage Methods *************/
 
-	/* Function : setItem
-	*  Stores an item in the cache of the app.
-	*  @param key The key associated to the item stored.
-	*  @param item The item to store in the cache.
-	*/
-    function setItem( key, item ) {
-		var s = JSON.stringify(item);
-		gbPostRequest ( "goodbarber://gbsetstorageitem", { "key": key}, { "item": s} );
+	function setItem(key, item) {
+		var s = item;
+		if ((!!item) && (item.constructor === Array) || (!!item) && (item.constructor === Object)) {
+			s = JSON.stringify(item);
+		}
+		gbPostRequest("goodbarber://gbsetstorageitem", { "key": key }, { "item": s });
 	}
 
-	/* Function : getItem
-	*  Retreive an item stored in the cache of the app.
-	*  @param key The key associated to the item stored.
-	*  @param callback A callback function that is executed when the item is retreived. The function gets passed one argument: Value which is the item stored.
-	*/
-	function getItem( key, callback ) {
+	function getItem(key, callback) {
 		var s = gbCallbackToString(callback);
-		gbPostRequest ( "goodbarber://gbgetstorageitem", { "key": key}, { "callback": s} );
+		gbPostRequest("goodbarber://gbgetstorageitem", { "key": key }, { "callback": s });
 	}
 
-	/* Function : removeItem
-	*  Remove an item stored in the cache of the app.
-	*  @param key The key associated to the item stored.
-	*/
-	function removeItem( key ) {
-		gbGetRequest ( "goodbarber://gbremovestorageitem", { "key": key });
+	function removeItem(key) {
+		gbPostRequest("goodbarber://gbremovestorageitem", { "key": key });
 	}
 
-	/* Function : clear
-	*  Remove all items stored in the cache of the app.
-	*/
 	function clear() {
-		gbGetRequest ( "goodbarber://gbclearstorage", { });
+		gbPostRequest("goodbarber://gbclearstorage", {});
 	}
 
-	/* Function : keys
-	*  Return a list of keys associated to all the items stored in the cache of the app.
-	*  @param callback A callback function that is executed when keys are retreived. The function gets passed one argument: Keys which is the list of keys.
-	*/
-    function keys(callback) {
+	function keys(callback) {
 		var s = gbCallbackToString(callback);
-        gbGetRequest ( "goodbarber://gbstoragekeys", {}, { "callback": callback });
-    }
+		gbPostRequest("goodbarber://gbgetstoragekeys", {}, { "callback": s });
+	}
 
     var storage = {
 		setItem: setItem,
@@ -609,14 +583,13 @@ var gb = (function() {
         keys: keys
 	};
 
-
     // public members, exposed with return statement
     return {
     	init: init,
+		sendRequest: gbSendRequest,
     	version: version,
+		navigation: navigation,
         storage: storage,
-    	get: get,
-    	post: post,
     	share: share,
     	getPhoto: getPhoto,
     	getVideo: getVideo,
@@ -645,15 +618,10 @@ var gb = (function() {
 */
 /*
 *  	This function is deprecated
-*	You should now use both gb.get() & gb.post() functions
 */
 function gbRequest ( resourceUrl, tag, cache, requestMethod, postParams )
 {
-	if (requestMethod == "POST") {
-		return gb.post ( resourceUrl, postParams, tag, cache);
-	} else {
-		return gb.get ( resourceUrl, tag, cache);
-	}
+	return gb.sendRequest(resourceUrl, tag, cache, requestMethod, postParams);
 }
 
 /************* [GB Plugin API] Other Methods *************/
@@ -723,11 +691,11 @@ function gbGetTimezoneOffset ()
 */
 /*
 *  	This function is deprecated
-*	You should now use the gb.setPreference() function
 */
 function gbSetPreference ( key, valueString, isGlobal="0" )
 {
-	return gb.setPreference(key, valueString, isGlobal);
+	var url = "goodbarber://setpreference?key="+key+"&value="+valueString+"&global="+isGlobal;
+	return gb.sendRequest(url, 0, false, "GET", {});
 }
 
 /* Function : gbGetPreference
@@ -737,11 +705,15 @@ function gbSetPreference ( key, valueString, isGlobal="0" )
 */
 /*
 *  	This function is deprecated
-*	You should now use the gb.getPreference() function
 */
 function gbGetPreference ( key, isGlobal="0" )
 {
-	return gb.getPreference(key, isGlobal);
+	if ( gbDevMode )
+		gbDidSuccessGetPreference ( key, "" );
+
+	
+	var url = "goodbarber://getpreference?key="+key+"&global="+isGlobal;
+	return gb.sendRequest(url, 0, false, "GET", {});
 }
 
 /* Function : gbGetUser
@@ -749,11 +721,13 @@ function gbGetPreference ( key, isGlobal="0" )
 */
 /*
 *  	This function is deprecated
-*	You should now use the gb.getUser() function
 */
 function gbGetUser ()
 {
-	return gb.getUser();
+	if ( gbDevMode )
+		gbDidSuccessGetUser ( { id:0, email:"user@example.com", attribs:{ displayName:"Example User" } } );
+	
+	return gb.sendRequest("goodbarber://getuser", 0, false, "GET", {});
 }
 
 /* Function : gbLogs

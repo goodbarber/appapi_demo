@@ -14,13 +14,13 @@
     }
     function displayValue() {
         gb.storage.getItem("myKey", function(value) {
-            gb.alert(value);
+            gb.alert("Value stored", value);
         });
     }
 
     function displayKeys() {
         gb.storage.keys(function(keys) {
-            gb.alert(keys);
+            gb.alert("List of keys", keys);
         });
     }
 </script>
