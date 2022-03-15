@@ -30,10 +30,11 @@ function gbDidFailGetUser ( errorMessage)
 
 function gbDidSuccessGetMedia ( data, fileUrl )
 {
+	var fileUrlEncoded = encodeURIComponent(fileUrl);
 	if (mediaType === 'video') {
-		document.location.href = "./video";
+		gb.location.href = "video?fileUrl="+fileUrlEncoded;
 	} else {
-		document.location.href = "./photo";
+		gb.location.href = "photo?fileUrl="+fileUrlEncoded;
 	}
 }
 
@@ -54,21 +55,4 @@ function alertAppInfo() {
 	s += "Device : " + gbUserInfo.deviceCode + "\n";
 	s += "Language : " + gbUserInfo.language;
 	alert(s);
-}
-
-function alertSetPreference() {
-	var myPref = prompt("Enter a value:");
-	if (myPref != null) {
-		gbSetPreference("myKey", myPref);
-	}
-}
-
-function gbDidSuccessGetPreference(key, value) {
-	if (key == "myKey") {
-		if (value == null || value == "") {
-			alert("No preference set.");
-		} else {
-			alert("Your preference set is " + value + ".");
-		}
-	}
 }

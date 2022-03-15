@@ -535,6 +535,42 @@ var gb = (function() {
 		}
 	});
 
+	/************* [GB Plugin API] Storage Methods *************/
+
+	function setItem(key, item) {
+		var s = item;
+		if ((!!item) && (item.constructor === Array) || (!!item) && (item.constructor === Object)) {
+			s = JSON.stringify(item);
+		}
+		gbPostRequest("goodbarber://gbsetstorageitem", {}, { "item": s, "key": key });
+	}
+
+	function getItem(key, callback) {
+		var s = gbCallbackToString(callback);
+		gbPostRequest("goodbarber://gbgetstorageitem", {}, { "callback": s, "key": key });
+	}
+
+	function removeItem(key) {
+		gbPostRequest("goodbarber://gbremovestorageitem", {}, { "key": key });
+	}
+
+	function clear() {
+		gbPostRequest("goodbarber://gbclearstorage", {});
+	}
+
+	function keys(callback) {
+		var s = gbCallbackToString(callback);
+		gbPostRequest("goodbarber://gbgetstoragekeys", {}, { "callback": s });
+	}
+
+	var storage = {
+		setItem: setItem,
+		getItem: getItem,
+		removeItem: removeItem,
+		clear: clear,
+		keys: keys
+	};
+
 	/************* [GB Plugin API] Deprecated Methods *************/
 
 	var deprecated = {

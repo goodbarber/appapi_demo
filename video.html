@@ -9,9 +9,7 @@
     function gbPluginDidLoad ()
     {
         var params = gb.location.params()
-        if ( params.has("fileUrl")) {
-            document.getElementById('content').innerHTML = '<video width="90%" height="auto" controls><source src="' + params.get['fileUrl'] + '" type="video/mp4">Error</video>';            
-        }
+        document.getElementById('content').innerHTML = '<video width="90%" height="auto" controls><source src="' + decodeURIComponent(params.get['fileUrl']) + '" type="video/mp4">Error</video>';            
     }
 </script>
 </head>

@@ -3,8 +3,8 @@ html {
 }
 
 body {
-	  text-align: center;
-	  font-family: 'Lato', sans-serif;
+    text-align: center;
+    font-family: 'Lato', sans-serif;
     font-weight: 400;
   	font-size: 20px;
     color: #5a5a5a;
@@ -27,7 +27,7 @@ body {
 
 #big_header {
     background-color: inherit;
-    font-size: 64px;
+    font-size: 50px;
     padding-top: 90px;
     padding-bottom: 90px;
     text-align: center;
