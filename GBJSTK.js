@@ -48,7 +48,7 @@ var gb = (function() {
 
 	/************* Parent platform detection *************/
 
-	if (gbUserInfo == null) {
+	if (typeof gbUserInfo == "undefined") {
 		gbUserInfo = {};
 	}
 
