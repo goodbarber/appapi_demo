@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="./style.css" type="text/css" />
+<script src="./GBJSTK.js"></script>
+<script>
+    function sendGetRequest() {
+        var url = "https://testapi.gb-custom.net/api/plugin-get?param=value";
+        var httpHeaders = { "header" : "header_value" };
+        gb.get (url, {
+            headers: httpHeaders,
+            success:  {
+                gb.alert("Request success", )
+            },
+            error: {
+
+            }
+        });
+    }
+
+    function sendPostRequest() {
+        var url = "https://testapi.gb-custom.net/api/plugin-post";
+        var postParams = { "param": "value" };
+        var httpHeaders = { "header" : "header_value" };
+        gb.post (url, {
+			params: postParams,
+            headers: httpHeaders,
+            success:  {
+
+            },
+            error: {
+
+            }
+		});
+    }
+
+    function sendPutRequest() {
+        var url = "https://testapi.gb-custom.net/api/plugin-put";
+        var postParams = { "param": "value" };
+        var httpHeaders = { "header" : "header_value" };
+        gb.put (url, {
+			params: postParams,
+            headers: httpHeaders,
+            success:  {
+
+            },
+            error: {
+
+            }
+		});
+    }
+
+    function sendPatchRequest() {
+        var url = "https://testapi.gb-custom.net/api/plugin-patch";
+        var postParams = { "param": "value" };
+        var httpHeaders = { "header" : "header_value" };
+        gb.patch (url, {
+			params: postParams,
+            headers: httpHeaders,
+            success:  {
+
+            },
+            error: {
+
+            }
+		});
+    }
+</script>
+</head>
+<body>
+    	<div class="cell" id="big_header">
+        	HTTP REQUESTS METHODS
+    	</div>
+        <div class="cell" onclick="askValue();">
+            Send a GET request
+        </div>
+        <hr>
+        <div class="cell" onclick="displayValue();">
+            Send a POST request
+        </div>
+        <hr>
+        <div class="cell" onclick="gb.storage.removeItem('myKey');">
+            Send a PUT request
+        </div>
+        <hr>
+        <div class="cell" onclick="gb.storage.clear();">
+            Send a PATCH request
+        </div>
+        <hr>
+        <div class="header" style="height:20px;">
+        </div>
+</body>
+</html>
