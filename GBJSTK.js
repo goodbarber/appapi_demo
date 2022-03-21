@@ -468,6 +468,9 @@ var gb = (function() {
 	*/
 	function href ()
 	{
+		if (typeof _GB == "undefined") {
+			return "";
+		}
 		return _GB["href"];
 	}
 
@@ -476,6 +479,9 @@ var gb = (function() {
 	*/
 	function params ()
 	{
+		if (typeof gbUserInfo == "undefined") {
+			return {};
+		}
 		return _GB["params"];
 	}
 
