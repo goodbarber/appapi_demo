@@ -12,10 +12,10 @@
         gb.request.get (url, {
             headers: httpHeaders,
             success: function(response) {
-                gb.alert("Request success", response);
+                gb.alert("Request success", JSON.stringify(response));
             },
             error: function(errorCode, errorResponse) {
-                gb.alert("Request error", errorResponse);
+                gb.alert("Request error", JSON.stringify(errorResponse));
             }
         });
     }
@@ -28,10 +28,10 @@
 			params: postParams,
             headers: httpHeaders,
             success: function(response) {
-                gb.alert("Request success", response);
+                gb.alert("Request success", JSON.stringify(response));
             },
             error: function(errorCode, errorResponse) {
-                gb.alert("Request error", errorResponse);
+                gb.alert("Request error", JSON.stringify(errorResponse));
             }
 		});
     }
@@ -44,10 +44,10 @@
 			params: postParams,
             headers: httpHeaders,
             success: function(response) {
-                gb.alert("Request success", response);
+                gb.alert("Request success", JSON.stringify(response));
             },
             error: function(errorCode, errorResponse) {
-                gb.alert("Request error", errorResponse);
+                gb.alert("Request error", JSON.stringify(errorResponse));
             }
 		});
     }
@@ -60,12 +60,28 @@
 			params: postParams,
             headers: httpHeaders,
             success: function(response) {
-                gb.alert("Request success", response);
+                gb.alert("Request success", JSON.stringify(response));
             },
             error: function(errorCode, errorResponse) {
-                gb.alert("Request error", errorResponse);
+                gb.alert("Request error", JSON.stringify(errorResponse));
             }
 		});
+    }
+
+    function sendDeleteRequest() {
+        var url = "https://testapi.gb-custom.net/api/plugin-delete";
+        var postParams = { "param": "value" };
+        var httpHeaders = { "header" : "header_value" };
+        gb.request.delete (url, {
+            params: postParams,
+            headers: httpHeaders,
+            success: function(response) {
+                gb.alert("Request success", JSON.stringify(response));
+            },
+            error: function(errorCode, errorResponse) {
+                gb.alert("Request error", JSON.stringify(errorResponse));
+            }
+        });
     }
 </script>
 </head>
@@ -87,6 +103,10 @@
         <hr>
         <div class="cell" onclick="sendPatchRequest();">
             Send a PATCH request
+        </div>
+        <hr>
+        <div class="cell" onclick="sendDeleteRequest();">
+            Send a DELETE request
         </div>
         <hr>
         <div class="header" style="height:20px;">

@@ -39,7 +39,7 @@ var gb = (function() {
 	*  1 : Alerts before any request
 	*  2 : Alerts before any request + stop requests
 	*/
-	var gbDebuggingMode = 0,
+	var gbDebuggingMode = 0;
 
 	/* Var : string gbToken
 	*  Initialize the authentification token used in gbRequest();
@@ -288,6 +288,15 @@ var gb = (function() {
 		}
 
 		/*  Function : gbWebsiteStoreGBGlobalData
+		 * Callback function for functions to be triggered on load
+		 */
+		function gbWebsiteOnLoad() {
+			if(typeof gb.onload == 'function'){
+				gb.onload();
+			}
+		}
+
+		/*  Function : gbWebsiteStoreGBGlobalData
 		* Set a variable with data
 		* @param where The name of the variable
 		* @param what The value of the variable
@@ -316,6 +325,8 @@ var gb = (function() {
 			gbWebsiteSetData(params[0], params[1]);
 		} else if (method == 'gbWebsiteStoreGBGlobalData') {
 			gbWebsiteStoreGBGlobalData(params[0], params[1]);
+		} else if (method == 'gbWebsiteOnLoad') {
+			gbWebsiteOnLoad();
 		} else if (gbAngularMode == true) {
 			// The method is a callback
 			gbWebsiteCallback(method, params);
@@ -324,6 +335,12 @@ var gb = (function() {
 	});
 
 	/************* GoodBarber Plugin API Functions *************/
+	
+	/************* [GB Plugin API] Events *************/
+
+    	function onLoad() {
+		gb.log('The plugin has been loaded. To handle this event you can use the gb.onload property.');
+    	}
 
 	/************* [GB Plugin API] Other Methods *************/
 
@@ -676,11 +693,30 @@ var gb = (function() {
 		return gbHTTPRequest ( url , 'PUT', params, httpHeaders, success, error);
 	}
 
+	/* Function : delete
+	*  Starts a DELETE request to the url resource.
+	*  @param url The url of the resource to load
+	*  @param settings A set of key/value pairs that configure the request. All settings are optional.
+	*  		params : A set of key/value paris that be sent to the server.
+	*		headers : An object of additional header key/value pairs to send along with requests.
+	*		success : A function to be called if the request succeeds.
+	*		error : A function to be called if the request fails.
+	*/
+	function _delete ( url, settings = {})
+	{
+		var params = settings['params'];
+		var httpHeaders = settings['headers'];
+		var success = settings['success'];
+		var error = settings['error'];
+		return gbHTTPRequest ( url , 'DELETE', params, httpHeaders, success, error);
+	}
+
     var request = {
 		get: get,
 		post: post,
 		patch: patch,
-		put: put
+		put: put,
+		delete: _delete
 	};
 
 	/************* [GB Plugin API] Deprecated Methods *************/
@@ -693,6 +729,7 @@ var gb = (function() {
     var result = {
     	init: init,
 		deprecated: deprecated,
+		onload: onload,
     	version: version,
 		location: location,
         storage: storage,
