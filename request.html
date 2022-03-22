@@ -9,13 +9,13 @@
     function sendGetRequest() {
         var url = "https://testapi.gb-custom.net/api/plugin-get?param=value";
         var httpHeaders = { "header" : "header_value" };
-        gb.get (url, {
+        gb.request.get (url, {
             headers: httpHeaders,
-            success:  {
-                gb.alert("Request success", )
+            success: function(response) {
+                gb.alert("Request success", response);
             },
-            error: {
-
+            error: function(errorCode, errorResponse) {
+                gb.alert("Request error", errorResponse);
             }
         });
     }
@@ -24,14 +24,14 @@
         var url = "https://testapi.gb-custom.net/api/plugin-post";
         var postParams = { "param": "value" };
         var httpHeaders = { "header" : "header_value" };
-        gb.post (url, {
+        gb.request.post (url, {
 			params: postParams,
             headers: httpHeaders,
-            success:  {
-
+            success: function(response) {
+                gb.alert("Request success", response);
             },
-            error: {
-
+            error: function(errorCode, errorResponse) {
+                gb.alert("Request error", errorResponse);
             }
 		});
     }
@@ -40,14 +40,14 @@
         var url = "https://testapi.gb-custom.net/api/plugin-put";
         var postParams = { "param": "value" };
         var httpHeaders = { "header" : "header_value" };
-        gb.put (url, {
+        gb.request.put (url, {
 			params: postParams,
             headers: httpHeaders,
-            success:  {
-
+            success: function(response) {
+                gb.alert("Request success", response);
             },
-            error: {
-
+            error: function(errorCode, errorResponse) {
+                gb.alert("Request error", errorResponse);
             }
 		});
     }
@@ -56,14 +56,14 @@
         var url = "https://testapi.gb-custom.net/api/plugin-patch";
         var postParams = { "param": "value" };
         var httpHeaders = { "header" : "header_value" };
-        gb.patch (url, {
+        gb.request.patch (url, {
 			params: postParams,
             headers: httpHeaders,
-            success:  {
-
+            success: function(response) {
+                gb.alert("Request success", response);
             },
-            error: {
-
+            error: function(errorCode, errorResponse) {
+                gb.alert("Request error", errorResponse);
             }
 		});
     }
@@ -73,19 +73,19 @@
     	<div class="cell" id="big_header">
         	HTTP REQUESTS METHODS
     	</div>
-        <div class="cell" onclick="askValue();">
+        <div class="cell" onclick="sendGetRequest();">
             Send a GET request
         </div>
         <hr>
-        <div class="cell" onclick="displayValue();">
+        <div class="cell" onclick="sendPostRequest();">
             Send a POST request
         </div>
         <hr>
-        <div class="cell" onclick="gb.storage.removeItem('myKey');">
+        <div class="cell" onclick="sendPutRequest();">
             Send a PUT request
         </div>
         <hr>
-        <div class="cell" onclick="gb.storage.clear();">
+        <div class="cell" onclick="sendPatchRequest();">
             Send a PATCH request
         </div>
         <hr>

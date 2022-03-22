@@ -209,11 +209,11 @@ var gb = (function() {
 		xhr.send ( null );
 	}
 
-	function gbHTTPRequest ( resourceUrl, tag, cache, requestMethod, postParams )
+	function gbHTTPRequest_Deprecated ( resourceUrl, tag, cache, requestMethod, postParams )
 	{
 		if (gbDevMode && gbToken == '')
 		{
-			setTimeout(function() { gbHTTPRequest ( resourceUrl, tag, cache, requestMethod, postParams ) }, 200);
+			setTimeout(function() { gbHTTPRequest_Deprecated ( resourceUrl, tag, cache, requestMethod, postParams ) }, 200);
 			return;
 		}
 
@@ -420,7 +420,7 @@ var gb = (function() {
 	}
 
 	/* Function : log
-	*  Console log a string. Usefull to log in native iOS with NSLogs
+	*  Console log a string. Useful to log in native iOS with NSLogs
 	*/
 	function log( log )
 	{
@@ -820,7 +820,7 @@ function gbGetUser ()
 }
 
 /* Function : gbLogs
-*  Console log a string. Usefull to log in native iOS with NSLogs
+*  Console log a string. Useful to log in native iOS with NSLogs
 */
 /*
 *  	This function is deprecated
