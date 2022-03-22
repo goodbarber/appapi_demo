@@ -287,12 +287,21 @@ var gb = (function() {
 			}
 		}
 
-		/*  Function : gbWebsiteStoreGBGlobalData
+		/*  Function : gbWebsiteOnLoad
 		 * Callback function for functions to be triggered on load
 		 */
 		function gbWebsiteOnLoad() {
 			if(typeof gb.onload == 'function'){
 				gb.onload();
+			}
+		}
+
+		/*  Function : gbWebsiteOnAppear
+		 * Callback function for functions to be triggered on appear
+		 */
+		function gbWebsiteOnAppear() {
+			if(typeof gb.onappear == 'function'){
+				gb.onappear();
 			}
 		}
 
@@ -327,6 +336,8 @@ var gb = (function() {
 			gbWebsiteStoreGBGlobalData(params[0], params[1]);
 		} else if (method == 'gbWebsiteOnLoad') {
 			gbWebsiteOnLoad();
+		} else if (method == 'gbWebsiteOnAppear') {
+			gbWebsiteOnAppear();
 		} else if (gbAngularMode == true) {
 			// The method is a callback
 			gbWebsiteCallback(method, params);
@@ -338,9 +349,13 @@ var gb = (function() {
 	
 	/************* [GB Plugin API] Events *************/
 
-    	function onLoad() {
+	function onLoad() {
 		gb.log('The plugin has been loaded. To handle this event you can use the gb.onload property.');
-    	}
+	}
+
+	function onAppear() {
+		gb.log('The plugin appared on the screen. To handle this event you can use the gb.onappear property.');
+	}
 
 	/************* [GB Plugin API] Other Methods *************/
 
@@ -729,7 +744,8 @@ var gb = (function() {
     var result = {
     	init: init,
 		deprecated: deprecated,
-		onload: onload,
+		onload: onLoad,
+		onappear: onAppear,
     	version: version,
 		location: location,
         storage: storage,
