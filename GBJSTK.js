@@ -338,9 +338,9 @@ var gb = (function() {
 	
 	/************* [GB Plugin API] Events *************/
 
-    	function onLoad() {
+    function onLoad() {
 		gb.log('The plugin has been loaded. To handle this event you can use the gb.onload property.');
-    	}
+    }
 
 	/************* [GB Plugin API] Other Methods *************/
 
@@ -502,6 +502,14 @@ var gb = (function() {
 		return _GB["params"];
 	}
 
+	/* Function : back
+	*  Go path to the previous page of the plugin
+	*/
+	function back () 
+	{
+		gbGetRequest("goodbarber://navigate.back");
+	}		
+
 	/* Function : open
 	*  Opens the url in a new window of the browser
 	*  @param url The url to open
@@ -542,6 +550,7 @@ var gb = (function() {
 	var location = {
 		href: href,
 		params: params,
+		back: back,
 		open: open,
 		mail: mail,
 		maps: maps
@@ -604,10 +613,10 @@ var gb = (function() {
     // public members, exposed with return statement
     var result = {
     	init: init,
-	deprecated: deprecated,
-	onload: onload,
+		deprecated: deprecated,
+		onload: onload,
     	version: version,
-	location: location,
+		location: location,
         storage: storage,
     	share: share,
     	getPhoto: getPhoto,
