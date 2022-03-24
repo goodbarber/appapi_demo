@@ -541,6 +541,13 @@ var gb = (function() {
 	function maps ( params )
 	{
 		params = params || {};
+		if (gbDevMode || gbAngularMode) {
+			var baseUrl = 'https://maps.google.com/maps?'
+			var queryString = Object.keys(params).map(key => key + '=' + params[key]).join('&');
+			open(baseUrl + queryString);
+			return;
+		}
+
 		if ( gbIsEmpty ( params ) )
 			gbGetRequest ( "goodbarber://maps?q=" );
 		else
