@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="./style.css" type="text/css" />
+<script>
+    function askValue() {
+        var value = prompt("Enter a value:");
+        if (value != null) {
+            gb.storage.setItem("myKey", value);
+        }
+    }
+    function displayValue() {
+        gb.storage.getItem("myKey", function(value) {
+            gb.alert("Value stored", value);
+        });
+    }
+
+    function displayKeys() {
+        gb.storage.keys(function(keys) {
+            gb.alert("List of keys", keys);
+        });
+    }
+</script>
+</head>
+<body>
+    	<div class="cell" id="big_header">
+        	STORAGE METHODS
+    	</div>
+        <div class="cell" onclick="askValue();">
+            Store a value in the cache of the app
+        </div>
+        <hr>
+        <div class="cell" onclick="displayValue();">
+            Retreive a value from the cache of the app
+        </div>
+        <hr>
+        <div class="cell" onclick="gb.storage.removeItem('myKey');">
+            Remove a value stored in the cache of the app
+        </div>
+        <hr>
+        <div class="cell" onclick="gb.storage.clear();">
+            Clear all values stored in the app
+        </div>
+        <hr>
+        <div class="cell" onclick="displayKeys();">
+            Retreive all the keys of the cache
+        </div>
+        <hr>
+        <div class="header" style="height:20px;">
+        </div>
+</body>
+</html>

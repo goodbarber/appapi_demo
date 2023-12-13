@@ -4,47 +4,88 @@
 <title></title>
 <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="./style.css" type="text/css" />
-<script src="./GBJSTK.js"></script>
 <script src="./script.js"></script>
 <script>
-    function gbPluginDidLoad () 
-    {
-        var url = 'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22ajaccio%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys';
-        gbRequest(url, 'weather', 'YES', 'GET');
-    }
+    var weatherCodes = [
+		{"code": 0, "description": "Clear sky"},
+		{"code": 1, "description": "Mainly clear"},
+		{"code": 2, "description": "Partly cloudy"},
+		{"code": 3, "description": "Overcast"},
+		{"code": [45, 48], "description": "Fog and depositing rime fog"},
+		{"code": [51, 53, 55], "description": "Drizzle"},
+		{"code": [56, 57], "description": "Freezing Drizzle"},
+		{"code": [61, 63, 65], "description": "Rain"},
+		{"code": [66, 67], "description": "Freezing Rain"},
+		{"code": [71, 73, 75], "description": "Snow fall"},
+		{"code": 77, "description": "Snow grains"},
+		{"code": [80, 81, 82], "description": "Rain showers"},
+		{"code": [85, 86], "description": "Snow showers slight"},
+		{"code": 95, "description": "Thunderstorm"},
+		{"code": [96, 99], "description": "Thunderstorm with slight hail"}
+	  ]
+	
+	// Function to obtain the description of a weather code
+	function getWeatherDescription(code) {
+		for (var i = 0; i < weatherCodes.length; i++) {
+			var entry = weatherCodes[i];
+			if (Array.isArray(entry.code) && entry.code.includes(code)) {
+				return entry.description;
+			} else if (entry.code === code) {
+				return entry.description;
+			}
+		}
+		return "Unknown";  // return "Unknown" if the code does not correspond
+	}
 
-    function gbRequestDidSuccess (tag, data, src)
+    function fetchRequest () 
     {
-        var rawFile = new XMLHttpRequest();
-        rawFile.open("GET", src, false);
-        rawFile.onreadystatechange = function ()
-        {
-            if(rawFile.readyState === 4)
-            {
-                if(rawFile.status === 200 || rawFile.status == 0)
-                {
-                    var allText = rawFile.responseText;
-                    console.log(allText);
-                    var data = JSON.parse(decodeURIComponent(allText));
-                    if ( data && data['query'] && data['query']['results'] && data['query']['results']['channel'] && data['query']['results']['channel']['item'] && data['query']['results']['channel']['item']['forecast'] )
-                    {
-                        var array = data['query']['results']['channel']['item']['forecast'];
-                        var contentDiv = document.getElementById('content');
-                        contentDiv.innerHTML = '';
-                        for(var i = 0; i<array.length; ++i){ 
-                            var obj = array[i];
-                            if ( obj['date'] && obj['text'] ) 
-                            {
-                                contentDiv.innerHTML += '<div class="cell" id="header">' + obj['date'] + '</div>';
-                                contentDiv.innerHTML += '<div class="cell">' + obj['text'] + '</div>';
-                            }
-                        }
+        var url = 'https://api.open-meteo.com/v1/forecast?latitude=41.9189&longitude=8.7381&daily=temperature_2m_max,temperature_2m_min,weather_code,wind_speed_10m_max';
+		const requestOptions = {
+			method: "GET",
+			cache: "no-cache",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		};
+		fetch(url, requestOptions)
+			.then((response) => {
+			if (!response.ok) {
+				throw new Error(`Request error: ${response.status} - ${response.statusText}`);
+			}
+			return response.json();
+			})
+				.then((data) => {
+                if (data && data.daily && data.daily.time) {
+                    var times = data.daily.time;
+                    var maxTemps = data.daily.temperature_2m_max;
+                    var minTemps = data.daily.temperature_2m_min;
+                    var weatherCodes = data.daily.weather_code;
+                    var maxWindSpeeds = data.daily.wind_speed_10m_max;
+
+                    var contentDiv = document.getElementById('content');
+                    contentDiv.innerHTML = '';
+
+                    for (var i = 0; i < times.length; ++i) {
+                        var time = times[i];
+                        var maxTemp = maxTemps[i];
+                        var minTemp = minTemps[i];
+                        var weatherCode = weatherCodes[i];
+                        var maxWindSpeed = maxWindSpeeds[i];
+
+                        contentDiv.innerHTML += '<div class="cell" id="header">' + time + '</div>';
+                        contentDiv.innerHTML += '<div class="cell">Max Temp: ' + maxTemp + '°C</div>';
+                        contentDiv.innerHTML += '<div class="cell">Min Temp: ' + minTemp + '°C</div>';
+                        contentDiv.innerHTML += '<div class="cell">Weather Code: ' + getWeatherDescription(weatherCode) + '</div>';
+                        contentDiv.innerHTML += '<div class="cell">Max Wind Speed: ' + maxWindSpeed + ' m/s</div>';
                     }
                 }
-            }
-        }
-        rawFile.send(null);
+			})
+				.catch((error) => {
+				gb.alert(error.message);
+		});
     }
+
+    gb.onappear = fetchRequest;
 </script>
 </head>
 <body>

@@ -4,27 +4,31 @@
 <title></title>
 <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="./style.css" type="text/css" />
-<script src="./GBJSTK.js"></script>
-<script src="./script.js"></script>
 <script>
-    function gbPluginDidLoad ()
+    function getUser ()
     {
-        if ( gbPostData && gbPostData['user'] ) {
-                var user = JSON.parse(decodeURIComponent(gbPostData['user']));
-            if (user['displayName']) {
-                document.getElementById('displayname').innerHTML = user['displayName'];
-            }
-            if (user['userName']) {
-                document.getElementById('username').innerHTML = user['userName'];
-            }
-            if (user['email']) {
-                document.getElementById('mail').innerHTML = user['email'];
-            }
-            if (user['location']) {
-                document.getElementById('location').innerHTML = user['location'];
-            }
-        }
+        gb.user.getCurrent(
+			(user) => {
+				if (user.displayName) {
+                	document.getElementById('displayname').innerHTML = user.userName;
+				}
+				if (user.userName) {
+					document.getElementById('username').innerHTML = user.userName;
+				}
+				if (user.email) {
+					document.getElementById('mail').innerHTML = user.email;
+				}
+				if (user.location) {
+					document.getElementById('location').innerHTML = user.location;
+				}
+			},
+			(error) => {
+				alert( "You're not logged in the app.");
+			}
+		)
     }
+
+    gb.onappear = getUser;
 </script>
 </head>
 <body>
