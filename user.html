@@ -10,10 +10,10 @@
 	    gb.user.getCurrent(
 		    (user) => {
 			    if (user.username) {
-				    document.getElementById('name').innerHTML = user.username;
+				    document.getElementById('username').innerHTML = user.username;
 			    }
 			    if (user.login) {
-				    document.getElementById('username').innerHTML = user.login;
+				    document.getElementById('login').innerHTML = user.login;
 			    }
 			    if (user.email) {
 				    document.getElementById('mail').innerHTML = user.email;
@@ -38,13 +38,13 @@
     	<div class="cell" id="header">
     		NAME
     	</div>
-    	<div class="cell" id="name">
+    	<div class="cell" id="username">
             -
     	</div>
         <div class="cell" id="header">
             USERNAME
         </div>
-        <div class="cell" id="username">
+        <div class="cell" id="login">
             -
         </div>
         <div class="cell" id="header">
