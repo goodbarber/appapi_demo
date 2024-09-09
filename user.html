@@ -5,27 +5,27 @@
 <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="./style.css" type="text/css" />
 <script>
-    function getUser ()
+    function getUser () 
     {
-        gb.user.getCurrent(
-			(user) => {
-				if (user.displayName) {
-                	document.getElementById('displayname').innerHTML = user.userName;
-				}
-				if (user.userName) {
-					document.getElementById('username').innerHTML = user.userName;
-				}
-				if (user.email) {
-					document.getElementById('mail').innerHTML = user.email;
-				}
-				if (user.location) {
-					document.getElementById('location').innerHTML = user.location;
-				}
-			},
-			(error) => {
-				alert( "You're not logged in the app.");
-			}
-		)
+	    gb.user.getCurrent(
+		    (user) => {
+			    if (user.username) {
+				    document.getElementById('username').innerHTML = user.username;
+			    }
+			    if (user.login) {
+				    document.getElementById('login').innerHTML = user.login;
+			    }
+			    if (user.email) {
+				    document.getElementById('mail').innerHTML = user.email;
+			    }
+			    if (user.location) {
+				    document.getElementById('location').innerHTML = user.location;
+			    }
+		    },
+		    (error) => {
+			    alert( "You're not logged in the app.");
+		    }
+	    )
     }
 
     gb.onappear = getUser;
@@ -38,13 +38,13 @@
     	<div class="cell" id="header">
     		NAME
     	</div>
-    	<div class="cell" id="displayname">
+    	<div class="cell" id="username">
             -
     	</div>
         <div class="cell" id="header">
             USERNAME
         </div>
-        <div class="cell" id="username">
+        <div class="cell" id="login">
             -
         </div>
         <div class="cell" id="header">
